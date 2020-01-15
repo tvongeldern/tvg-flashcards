@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 export const config = {
 	config: 'known',
 	mongo: {
-		url: process.env.MONGODB_URI || 'mongodb://heroku_7wtltl5h:eakokt6pq23k5va42ojucvuufh@ds257314.mlab.com:57314/heroku_7wtltl5h',
+		url: process.env.MONGODB_URI,
 	},
 };
 
