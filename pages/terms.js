@@ -39,6 +39,16 @@ export default function TermsPage(props) {
 						<div>{term.spanishSentence}</div>
 					</div>
 
+					<div>
+						<div>Flashcard attempts</div>
+						<div>{term.totalAttempts}</div>
+					</div>
+
+					<div>
+						<div>Successful attempts</div>
+						<div>{term.successfulAttempts}</div>
+					</div>
+
 					<button onClick={() => deleteTerm(term._id)}>Delete</button>
 				</div>
 			))}
