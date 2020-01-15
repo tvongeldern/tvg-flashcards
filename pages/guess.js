@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Nav from '../components/nav'
 
 const DEFAULT_LIMIT = 5;
 
@@ -41,6 +42,7 @@ export default function GuessPage(props) {
 	}, []);
 	return (
 		<div>
+			<Nav />
 			<div>
 				<div>{`${showingLanguage.name} word`}</div>
 				<div>{showingLanguage.word}</div>

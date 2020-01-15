@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Nav from '../components/nav'
 
 function getAllTerms() {
 	return axios('/api/terms');
@@ -14,9 +15,9 @@ export default function TermsPage(props) {
 	useEffect(() => {
 		getAllTerms().then(({ data }) => setTerms(data));
 	}, []);
-	console.log({ terms });
 	return (
 		<div>
+			<Nav />
 			{terms.map((term) => (
 				<div key={term._id}>
 					<div>

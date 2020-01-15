@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Form, Field } from 'react-final-form';
+import Nav from '../components/nav';
 
 function addNewTerm(formData) {
 	return axios.post('/api/add', formData);
@@ -9,6 +10,7 @@ function addNewTerm(formData) {
 export default function TermsPage(props) {
 	return (
 		<div>
+			<Nav />
 			<Form
 				onSubmit={addNewTerm}
 				render={({ form, handleSubmit }) => (
