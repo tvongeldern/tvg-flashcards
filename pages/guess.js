@@ -28,7 +28,7 @@ export default function GuessPage(props) {
 	const successfulAttemptsKey = state.englishToSpanish ? 'spanishSuccessfulAttempts' : 'englishSuccessfulAttempts';
 	const streakKey = state.englishToSpanish ? 'spanishStreak' : 'englishStreak';
 	const fetchTerm = () => getRandomTerm(state)
-		.then(({ data }) => setState({ ...state, term: data, reveal: false }));
+		.then(({ data }) => setState({ ...state, term: data || {}, reveal: false }));
 	const recordGuess = (gotItRight = false) => updateTerm(state.term._id, {
 		[totalAttemptsKey]: state.term[totalAttemptsKey] + 1,
 		[successfulAttemptsKey]: state.term[totalAttemptsKey] + +gotItRight,
@@ -95,7 +95,11 @@ export default function GuessPage(props) {
 				<div className="group buttons">
 					<button
 						className="toggle"
-						onClick={() => setState({ ...state, englishToSpanish: !state.englishToSpanish })}
+						onClick={() => setState({
+							...state,
+							englishToSpanish: !state.englishToSpanish,
+							reveal: false,
+						})}
 					>Toggle translation direction</button>
 				</div>
 			</div>

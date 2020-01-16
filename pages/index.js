@@ -12,8 +12,10 @@ function deleteTerm(id) {
 
 export default function TermsPage(props) {
 	const [terms, setTerms] = useState([]);
+	const fetchTerms = () => getAllTerms()
+		.then(({ data }) => setTerms(data));
 	useEffect(() => {
-		getAllTerms().then(({ data }) => setTerms(data));
+		fetchTerms();
 	}, []);
 	return (
 		<div>
@@ -71,7 +73,7 @@ export default function TermsPage(props) {
 							<div>{term.englishStreak}</div>
 						</div>
 
-						<button onClick={() => deleteTerm(term._id)}>Delete</button>
+						<button onClick={() => deleteTerm(term._id).then(fetchTerms)}>Delete</button>
 					</div>
 				))}
 			</div>
