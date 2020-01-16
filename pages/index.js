@@ -77,6 +77,7 @@ export default function TermsPage(props) {
 			</div>
 			<style jsx>{`
       .terms-page {
+				touch-action: manipulation;
         display: flex;
 				flex-direction: column;
 				padding: 8px 16px;

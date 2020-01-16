@@ -45,6 +45,7 @@ export default function TermsPage(props) {
 			</div>
 			<style>{`
       .add-page {
+				touch-action: manipulation;
 				display: flex;
 				flex-direction: column;
 			}

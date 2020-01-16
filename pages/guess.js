@@ -101,6 +101,7 @@ export default function GuessPage(props) {
 			</div>
 			<style jsx>{`
       .guess-page {
+				touch-action: manipulation;
         display: flex;
 				flex-direction: column;
 				padding: 8px 16px;
