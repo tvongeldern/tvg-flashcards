@@ -1,88 +1,117 @@
-import React from 'react'
-import Head from 'next/head'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Nav from '../components/nav'
 
-const Home = () => (
-  <div>
-    <Head>
-      <title>Home</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+function getAllTerms() {
+	return axios('/api/terms');
+}
 
-    <Nav />
+function deleteTerm(id) {
+	return axios(`/api/delete/${id}`);
+}
 
-    <div className="hero">
-      <h1 className="title">Welcome to Next.js its Toms page!</h1>
-      <p className="description">
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
+export default function TermsPage(props) {
+	const [terms, setTerms] = useState([]);
+	useEffect(() => {
+		getAllTerms().then(({ data }) => setTerms(data));
+	}, []);
+	return (
+		<div>
+			<Nav />
+			<div className="terms-page">
+				{terms.map((term) => (
+					<div key={term._id} className="term">
+						<div className="group">
+							<div>English word</div>
+							<div>{term.englishWord}</div>
+						</div>
 
-      <div className="row">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
-      </div>
-    </div>
+						<div className="group">
+							<div>English sentence</div>
+							<div>{term.englishSentence}</div>
+						</div>
 
-    <style jsx>{`
-      .hero {
-        width: 100%;
-        color: #333;
-      }
-      .title {
-        margin: 0;
-        width: 100%;
-        padding-top: 80px;
-        line-height: 1.15;
-        font-size: 48px;
-      }
-      .title,
-      .description {
-        text-align: center;
-      }
-      .row {
-        max-width: 880px;
-        margin: 80px auto 40px;
+						<div className="group">
+							<div>Spansish word</div>
+							<div>{term.spanishWord}</div>
+						</div>
+
+						<div className="group">
+							<div>Spansish sentence</div>
+							<div>{term.spanishSentence}</div>
+						</div>
+
+						<div className="group">
+							<div>Spanish attempts</div>
+							<div>{term.spanishTotalAttempts}</div>
+						</div>
+
+						<div className="group">
+							<div>Successful Spanish attempts</div>
+							<div>{term.spanishSuccessfulAttempts}</div>
+						</div>
+
+						<div className="group">
+							<div>Spanish streak</div>
+							<div>{term.spanishStreak}</div>
+						</div>
+
+						<div className="group">
+							<div>English attempts</div>
+							<div>{term.englishTotalAttempts}</div>
+						</div>
+
+						<div className="group">
+							<div>Successful English attempts</div>
+							<div>{term.englishSuccessfulAttempts}</div>
+						</div>
+
+						<div className="group">
+							<div>English streak</div>
+							<div>{term.englishStreak}</div>
+						</div>
+
+						<button onClick={() => deleteTerm(term._id)}>Delete</button>
+					</div>
+				))}
+			</div>
+			<style jsx>{`
+      .terms-page {
         display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .card {
-        padding: 18px 18px 24px;
-        width: 220px;
-        text-align: left;
-        text-decoration: none;
-        color: #434343;
-        border: 1px solid #9b9b9b;
-      }
-      .card:hover {
-        border-color: #067df7;
-      }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
-      }
+				flex-direction: column;
+				padding: 8px 16px;
+			}
+			.term {
+				display: flex;
+				flex-direction: column;
+				padding: 16px;
+				border: 1px solid gray;
+				border-radius: 8px;
+				margin: 8px 0;
+			}
+			.group {
+				display: flex;
+				padding: 2px;
+				justify-content: space-between;
+			}
+			.group div:first-child {
+				font-weight: bold;
+			}
+			button {
+				padding: 12px;
+				margin: 24px 60px 0px 24px;
+				cursor: pointer;
+				color: white;
+				border-radius: 4px;
+				background-color: red;
+			}
+			button:active {
+				background-color: gray;
+			}
+			button:focus {
+				outline: none;
+			}
     `}</style>
-  </div>
-)
-
-export default Home
+		</div>
+	);
+}

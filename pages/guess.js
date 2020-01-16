@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Nav from '../components/nav'
 
-const DEFAULT_LIMIT = 5;
+const DEFAULT_LIMIT = 3;
 
-function getRandomTerm(successfulAttemptsLimit) {
+function getRandomTerm({ successfulAttemptsLimit, englishToSpanish }) {
 	return axios(`/api/random`, {
-		params: { successfulAttemptsLimit }
+		params: {
+			successfulAttemptsLimit,
+			englishToSpanish,
+		},
 	});
 }
 
@@ -18,24 +21,28 @@ export default function GuessPage(props) {
 	const [state, setState] = useState({
 		term: {},
 		reveal: false,
-		englishToSpanish: false,
+		englishToSpanish: true,
 		successfulAttemptsLimit: DEFAULT_LIMIT,
 	});
-	const fetchTerm = () => getRandomTerm(state.successfulAttemptsLimit)
+	const totalAttemptsKey = state.englishToSpanish ? 'spanishTotalAttempts' : 'englishTotalAttempts';
+	const successfulAttemptsKey = state.englishToSpanish ? 'spanishSuccessfulAttempts' : 'englishSuccessfulAttempts';
+	const streakKey = state.englishToSpanish ? 'spanishStreak' : 'englishStreak';
+	const fetchTerm = () => getRandomTerm(state)
 		.then(({ data }) => setState({ ...state, term: data, reveal: false }));
 	const recordGuess = (gotItRight = false) => updateTerm(state.term._id, {
-		totalAttempts: state.term.totalAttempts + 1,
-		successfulAttempts: state.term.totalAttempts + +gotItRight,
+		[totalAttemptsKey]: state.term[totalAttemptsKey] + 1,
+		[successfulAttemptsKey]: state.term[totalAttemptsKey] + +gotItRight,
+		[streakKey]: gotItRight ? state.term[streakKey] + 1 : 0,
 	}).then(fetchTerm);
 	const showingLanguage = {
 		name: state.englishToSpanish ? 'English' : 'Spanish',
-		word: state.term.englishWord,
-		sentence: state.term.englishSentence,
+		word: state.englishToSpanish ? state.term.englishWord : state.term.spanishWord,
+		sentence: state.englishToSpanish ? state.term.englishSentence : state.term.spanishSentence,
 	};
 	const hiddenLanguage = {
-		name: state.englishToSpanish ? 'Spanish' : 'English',
-		word: state.term.spanishWord,
-		sentence: state.term.spanishSentence,
+		name: !state.englishToSpanish ? 'English' : 'Spanish',
+		word: !state.englishToSpanish ? state.term.englishWord : state.term.spanishWord,
+		sentence: !state.englishToSpanish ? state.term.englishSentence : state.term.spanishSentence,
 	};
 	useEffect(() => {
 		fetchTerm();
@@ -43,44 +50,105 @@ export default function GuessPage(props) {
 	return (
 		<div>
 			<Nav />
-			<div>
-				<div>{`${showingLanguage.name} word`}</div>
-				<div>{showingLanguage.word}</div>
-			</div>
-
-			{showingLanguage.sentence && (
-				<div>
-					<div>{`${showingLanguage.name} sentence`}</div>
-					<div>{showingLanguage.sentence}</div>
+			<div className="guess-page">
+				<div className="group text">
+					<div>{`${showingLanguage.name} word`}</div>
+					<div>{showingLanguage.word}</div>
 				</div>
-			)}
 
-			{!state.reveal && (
-				<div>
-					<button onClick={() => setState({ ...state, reveal: true })}>Reveal</button>
-				</div>
-			)}
-
-			{state.reveal && (
-				<>
-					<div>
-						<div>{`${hiddenLanguage.name} word`}</div>
-						<div>{hiddenLanguage.word}</div>
+				{showingLanguage.sentence && (
+					<div className="group text">
+						<div>{`${showingLanguage.name} sentence`}</div>
+						<div>{showingLanguage.sentence}</div>
 					</div>
+				)}
 
-					{hiddenLanguage.sentence && (
-						<div>
-							<div>{`${hiddenLanguage.name} sentence`}</div>
-							<div>{hiddenLanguage.sentence}</div>
+				{!state.reveal && (
+					<div className="group buttons">
+						<button className="reveal" onClick={() => setState({ ...state, reveal: true })}>Reveal</button>
+					</div>
+				)}
+
+				{state.reveal && (
+					<>
+						<div className="divider" />
+						<div className="group text">
+							<div>{`${hiddenLanguage.name} word`}</div>
+							<div>{hiddenLanguage.word}</div>
 						</div>
-					)}
 
-					<div>
-						<button onClick={() => recordGuess(true)}>Got it right</button>
-						<button onClick={() => recordGuess(false)}>Did not get it right</button>
-					</div>
-				</>
-			)}
+						{hiddenLanguage.sentence && (
+							<div className="group text">
+								<div>{`${hiddenLanguage.name} sentence`}</div>
+								<div>{hiddenLanguage.sentence}</div>
+							</div>
+						)}
+
+						<div className="group buttons">
+							<button className="got-it-right" onClick={() => recordGuess(true)}>Got it right</button>
+							<button className="got-it-wrong" onClick={() => recordGuess(false)}>Did not get it right</button>
+						</div>
+						
+					</>
+				)}
+
+				<div className="group buttons">
+					<button
+						className="toggle"
+						onClick={() => setState({ ...state, englishToSpanish: !state.englishToSpanish })}
+					>Toggle translation direction</button>
+				</div>
+			</div>
+			<style jsx>{`
+      .guess-page {
+        display: flex;
+				flex-direction: column;
+				padding: 8px 16px;
+			}
+			.group {
+				display: flex;
+				flex-direction: column;
+			}
+			.group.buttons button {
+				margin-bottom: 0;
+			}
+			button {
+				padding: 12px;
+				margin: 24px;
+				cursor: pointer;
+				color: white;
+				border-radius: 4px;
+			}
+			button:active {
+				background-color: gray;
+			}
+			button:focus {
+				outline: none;
+			}
+			.reveal {
+				background-color: blue;
+			}
+			.got-it-right {
+				background-color: green;
+			}
+			.got-it-wrong {
+				background-color: red;
+			}
+			.toggle {
+				background-color: purple;
+			}
+			.group div {
+				padding: 4px;
+			}
+			.group div:first-child {
+				font-weight: bold;
+			}
+			.divider {
+				background-color: purple;
+				padding: 1px;
+				margin: 8px;
+			}
+    `}</style>
 		</div>
 	);
 }

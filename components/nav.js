@@ -4,7 +4,7 @@ import Link from 'next/link'
 const links = [
   { href: '/add', label: 'Add' },
   { href: '/guess', label: 'Guess' },
-  { href: '/terms', label: 'Terms' }
+  { href: '/', label: 'Terms' }
 ].map(link => {
   link.key = `nav-link-${link.href}-${link.label}`
   return link
