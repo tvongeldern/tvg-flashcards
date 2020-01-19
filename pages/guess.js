@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Nav from '../components/nav'
-
+import Nav from '../components/nav';
 const DEFAULT_LIMIT = 3;
+
+function getFromLs(key) {
+	if (typeof localStorage === 'object' && typeof localStorage.getItem === 'function') {
+		return localStorage.getItem(key);
+	}
+}
+
+function setToLs(key, value) {
+	if (typeof localStorage === 'object' && typeof localStorage.setItem === 'function') {
+		return localStorage.setItem(key, value);
+	}
+}
 
 function getRandomTerm({ successfulAttemptsLimit, englishToSpanish }) {
 	return axios(`/api/random`, {
@@ -21,8 +32,8 @@ export default function GuessPage(props) {
 	const [state, setState] = useState({
 		term: {},
 		reveal: false,
-		englishToSpanish: true,
-		successfulAttemptsLimit: DEFAULT_LIMIT,
+		englishToSpanish: getFromLs('e2s') || '',
+		successfulAttemptsLimit: getFromLs('sal') || DEFAULT_LIMIT,
 	});
 	const totalAttemptsKey = state.englishToSpanish ? 'spanishTotalAttempts' : 'englishTotalAttempts';
 	const successfulAttemptsKey = state.englishToSpanish ? 'spanishSuccessfulAttempts' : 'englishSuccessfulAttempts';
@@ -34,6 +45,15 @@ export default function GuessPage(props) {
 		[successfulAttemptsKey]: state.term[totalAttemptsKey] + +gotItRight,
 		[streakKey]: gotItRight ? state.term[streakKey] + 1 : 0,
 	}).then(fetchTerm);
+	const toggleDirection = () => {
+		const newDirection = !state.englishToSpanish;
+		setToLs('e2s', newDirection || '')
+		setState({
+			...state,
+			englishToSpanish: newDirection,
+			reveal: false,
+		});
+	}
 	const showingLanguage = {
 		name: state.englishToSpanish ? 'English' : 'Spanish',
 		word: state.englishToSpanish ? state.term.englishWord : state.term.spanishWord,
@@ -95,11 +115,7 @@ export default function GuessPage(props) {
 				<div className="group buttons">
 					<button
 						className="toggle"
-						onClick={() => setState({
-							...state,
-							englishToSpanish: !state.englishToSpanish,
-							reveal: false,
-						})}
+						onClick={toggleDirection}
 					>Toggle translation direction</button>
 				</div>
 			</div>
