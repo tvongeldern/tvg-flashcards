@@ -27,7 +27,7 @@ export default function TermsPage(props) {
 							</div>
 
 							<div className="group">
-								<label>Spansish word</label>
+								<label>Spanish word</label>
 								<Field name="spanishWord" component="input" className="input" />
 							</div>
 
